@@ -112,8 +112,8 @@ namespace GoogleARCore.Examples.Common
         }
 
         // my function to hide grid
-        public void UpdateGridView() {
-            m_MeshRenderer.enabled = false;
+        public void UpdateGridView(bool set) {
+            m_MeshRenderer.enabled = set;
         }
 
         /// <summary>

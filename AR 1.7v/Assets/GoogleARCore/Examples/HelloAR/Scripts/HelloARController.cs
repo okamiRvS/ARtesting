@@ -99,7 +99,7 @@ namespace GoogleARCore.Examples.HelloAR {
                     GameObject prefab;
                     if (!(hit.Trackable is FeaturePoint)) {
                         // to hide grid
-                        hideGrid();
+                        // hideGrid(false);
                         hidePop();
 
                         prefab = Prefab[(int)Random.Range(0,2)];
@@ -186,10 +186,10 @@ namespace GoogleARCore.Examples.HelloAR {
             }
         }
 
-        public void hideGrid() {
+        public void hideGrid(bool set) {
             foreach (GameObject plane in GameObject.FindGameObjectsWithTag("plane")) {
                 DetectedPlaneVisualizer t = plane.GetComponent<DetectedPlaneVisualizer>();
-                t.UpdateGridView();
+                t.UpdateGridView(set);
             }
         }
 
