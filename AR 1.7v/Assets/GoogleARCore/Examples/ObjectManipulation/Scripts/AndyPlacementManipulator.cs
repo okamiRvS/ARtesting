@@ -36,7 +36,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
         /// </summary>
-        public GameObject AndyPrefab;
+        public GameObject[] Prefab;
+
+        /// <summary>
+        /// A model to place when a raycast from a user touch hits a plane.
+        /// </summary>
+        public GameObject TestPrefab;
 
         /// <summary>
         /// Manipulator prefab to attach placed objects to.
@@ -91,8 +96,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 }
                 else
                 {
+                    // Randomically choose a model for the Trackable that got hit.
+                    GameObject prefab;
+                    prefab = Prefab[(int)Random.Range(0, Prefab.Length)];
+
                     // Instantiate Andy model at the hit pose.
-                    var andyObject = Instantiate(AndyPrefab, hit.Pose.position, hit.Pose.rotation);
+                    var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
 
                     // Instantiate manipulator.
                     var manipulator = Instantiate(ManipulatorPrefab, hit.Pose.position, hit.Pose.rotation);

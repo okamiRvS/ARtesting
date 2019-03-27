@@ -39,11 +39,6 @@ namespace GoogleARCore.Examples.HelloAR {
         public Camera FirstPersonCamera;
 
         /// <summary>
-        /// A prefab for tracking and visualizing detected planes.
-        /// </summary>
-        public GameObject DetectedPlanePrefab;
-
-        /// <summary>
         /// A model to place when a raycast from a user touch hits a plane.
         /// </summary>
         public GameObject[] Prefab = new GameObject[2];
