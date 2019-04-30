@@ -1,12 +1,14 @@
-﻿using GoogleARCore.Examples.Common;
+﻿using GoogleARCore;
+using GoogleARCore.Examples.Common;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-
 public class MenuButton : MonoBehaviour {
+
+    public RawImage RawImage;
 
     /// <summary>
     /// A prefab for tracking and visualizing detected planes.
@@ -24,6 +26,28 @@ public class MenuButton : MonoBehaviour {
         } else {
             GridStatus = true;
         }
+    }
+
+    public void TakeFrame()
+    {
+        // YUV TO RGB
+        // https://github.com/google-ar/arcore-unity-sdk/issues/221
+        CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
+        Texture2D texture = new Texture2D(image.Width, image.Height, TextureFormat.R8, false, false);
+        if (!image.IsAvailable)
+        {
+            return;
+        }
+
+        int size = image.Width * image.Height;
+        byte[] yBuff = new byte[size];
+        System.Runtime.InteropServices.Marshal.Copy(image.Y, yBuff, 0, size);
+
+        texture.LoadRawTextureData(yBuff);
+        texture.Apply();
+
+        RawImage.texture = texture;
+
     }
 
     public void QuitGame() {
