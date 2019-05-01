@@ -61,6 +61,7 @@ public class MenuButton : MonoBehaviour {
         // https://github.com/google-ar/arcore-unity-sdk/issues/221
         // https://stackoverflow.com/questions/49579334/save-acquirecameraimagebytes-from-unity-arcore-to-storage-as-an-image
         // https://github.com/google-ar/arcore-unity-sdk/issues/527
+        // https://stackoverflow.com/questions/55495030/how-to-use-the-arcore-camera-image-in-opencv-in-an-unity-android-app/55495031#55495031
 
         CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
         if (!image.IsAvailable) return;
