@@ -350,6 +350,12 @@ Camera:
   m_CorrespondingSourceObject: {fileID: 20155940112608238, guid: c10877f7cd5764de18d46d7b777d1faa,
     type: 2}
   m_PrefabInternal: {fileID: 646831370}
+--- !u!114 &646831372 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114451889682527732, guid: c10877f7cd5764de18d46d7b777d1faa,
+    type: 2}
+  m_PrefabInternal: {fileID: 646831370}
+  m_Script: {fileID: 11500000, guid: d4ca0c6a3af6b4635b7e98c6ea0a0cf9, type: 3}
 --- !u!1001 &690995859
 Prefab:
   m_ObjectHideFlags: 0
@@ -894,6 +900,11 @@ Prefab:
       propertyPath: RawImage
       value: 
       objectReference: {fileID: 1937163984}
+    - target: {fileID: 114813560059052804, guid: 4ac4cbeedcf351a42b1851db6b1c405c,
+        type: 2}
+      propertyPath: ARSessionManager
+      value: 
+      objectReference: {fileID: 646831372}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ac4cbeedcf351a42b1851db6b1c405c, type: 2}
   m_IsPrefabAsset: 0
