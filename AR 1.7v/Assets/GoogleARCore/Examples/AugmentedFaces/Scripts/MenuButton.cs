@@ -12,27 +12,27 @@ using System.Runtime.InteropServices;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.UnityUtils;
+using OpenCvYolo3;
+using OpenCVForUnity.ImgcodecsModule;
 
 public class MenuButton : MonoBehaviour {
 
     public RawImage RawImage;
+    public Text test;
+    private bool GridStatus = true;
 
     // [] 1
     public ARCoreSession ARSessionManager;
     private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration = null;
-    // [] 1
 
-    /// <summary>
-    /// A prefab for tracking and visualizing detected planes.
-    /// </summary>
-    bool GridStatus = true;
-
-    // [] 2
     public void Start()
     {
+        // Register the callback to set camera config before arcore session is enabled.
         m_OnChoseCameraConfiguration = _ChooseCameraConfiguration;
         ARSessionManager.RegisterChooseCameraConfigurationCallback(m_OnChoseCameraConfiguration);
 
+        // Pause and resume the ARCore session to apply the camera configuration.
+        ARSessionManager.enabled = false;
         ARSessionManager.enabled = true;
     }
 
@@ -40,7 +40,7 @@ public class MenuButton : MonoBehaviour {
     {
         return supportedConfigurations.Count - 1;
     }
-    // [] 2
+    // [] 1
 
     public void SetGrid () {
         foreach (GameObject plane in GameObject.FindGameObjectsWithTag("plane")) {
@@ -55,7 +55,7 @@ public class MenuButton : MonoBehaviour {
         }
     }
 
-    public void TakeFrame()
+     public void TakeFrame()
     {
         // YUV TO RGB
         // https://github.com/google-ar/arcore-unity-sdk/issues/221
@@ -65,6 +65,8 @@ public class MenuButton : MonoBehaviour {
 
         CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
         if (!image.IsAvailable) return;
+
+        Debug.Log(image.Width + " " + image.Height);
 
         // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
         // I will explain later, why.
@@ -99,28 +101,41 @@ public class MenuButton : MonoBehaviour {
 
         Mat input_image = new Mat(image.Height + image.Height / 2, image.Width, CvType.CV_8UC1);
         Utils.copyToMat(YUVhandle.AddrOfPinnedObject(), input_image);
-        Debug.Log(input_image.rows());
 
         Mat output_image = new Mat(image.Height, image.Width, CvType.CV_8UC3);
         Utils.copyToMat(RGBhandle.AddrOfPinnedObject(), output_image);
 
         Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGBA_NV12);
-
+        Debug.Log("input_image" + CvType.typeToString(input_image.type()));
+        Debug.Log("output_image" + CvType.typeToString(output_image.type()));
+        Debug.Log("output_imageToString " + output_image.ToString());
+        
         // Create a new texture object
         Texture2D result = new Texture2D(image.Width, image.Height, TextureFormat.RGB24, false);
 
         Utils.matToTexture2D(output_image, result);
 
-        RawImage.texture = result;
-
         YUVhandle.Free();
         RGBhandle.Free();
-        
-/*
-var encodedPng = frame.EncodeToPNG();
-var path = Application.persistentDataPath;
-File.WriteAllBytes(path + "/images/" + date + ".png", encodedPng);
-*/
+
+        RawImage.texture = result;
+
+        // Save pic on streamngAssets
+        byte[] encodedPng = result.EncodeToPNG();
+        string destPath = Path.Combine(Application.streamingAssetsPath, "dnn/0.png");
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            destPath = Path.Combine(Application.persistentDataPath, "opencvforunity");
+            destPath = Path.Combine(destPath, "dnn/0.png");
+        }
+
+        test.text = destPath;
+        File.WriteAllBytes(destPath, encodedPng);
+
+        // Send Mat output_image to Yolo3Android to process objectDetection
+        Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
+        a.InitializeImage("0.png");
     }
 
     public void QuitGame() {

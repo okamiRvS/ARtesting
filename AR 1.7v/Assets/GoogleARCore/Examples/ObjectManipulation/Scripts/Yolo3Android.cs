@@ -8,6 +8,7 @@ using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.DnnModule;
 using System.Globalization;
+using UnityEngine.UI;
 
 namespace OpenCvYolo3
 {
@@ -20,11 +21,14 @@ namespace OpenCvYolo3
 
     public class Yolo3Android : MonoBehaviour
     {
+        public RawImage RawImage;
+        public Text test;
+
         #region
         private string cfg = "yolov3.cfg";
         private string weight = "yolov3.weights";
         private string names = "coco.names";
-        private string image = "kite.jpg";
+        private string image = "1.jpg";
 
         const float threshold = 0.24f;       //for confidence 
         const float nmsThreshold = 0.24f;    //threshold for nms
@@ -34,6 +38,8 @@ namespace OpenCvYolo3
 
         //get labels from coco.names
         private static string[] Labels;
+
+        Mat img = null;
         #endregion
 
         void Start()
@@ -42,28 +48,54 @@ namespace OpenCvYolo3
             weight = Utils.getFilePath("dnn/" + weight);
             names = Utils.getFilePath("dnn/" + names);
             image = Utils.getFilePath("dnn/" + image);
-            
+            test.text = "Image path: " + image;
+
             Labels = readClassNames(names).ToArray();
             Colors = Enumerable
                 .Repeat(false, Labels.Length)
                 .Select(x => new Scalar((int)UnityEngine.Random.Range(0f, 256f), (int)UnityEngine.Random.Range(0f, 256f), (int)UnityEngine.Random.Range(0f, 256f)))
                 .ToArray();
-  
-            ObjectDetection();
+
+            InitializeImage();
         }
 
-        void ObjectDetection()
+        public void InitializeImage()
         {
-            // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
-            Utils.setDebugMode(true);
-
-            Mat img = Imgcodecs.imread(image);
+            img = Imgcodecs.imread(image);
+            Debug.Log("First: " + CvType.typeToString(img.type()));
+            Debug.Log("FirstToString: " + img.ToString());
             if (img.empty())
             {
                 Debug.LogError("Image " + image + " is not loaded.");
                 img = new Mat(424, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
+                return;
             }
+            ObjectDetection();
+        }
 
+        public void InitializeImage(Mat image)
+        {
+            img = image;
+            ObjectDetection();
+        }
+
+        public void InitializeImage(string image)
+        {
+            image = Utils.getFilePath("dnn/" + image);
+            img = Imgcodecs.imread(image);
+            if (img.empty())
+            {
+                Debug.LogError("Image " + image + " is not loaded.");
+                img = new Mat(424, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
+                return;
+            }
+            ObjectDetection();
+        }
+
+        public void ObjectDetection()
+        {
+            // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
+            Utils.setDebugMode(true);
 
             Net net = null;
 
@@ -72,7 +104,7 @@ namespace OpenCvYolo3
                 Debug.LogError(cfg + " or " + weight + " is not loaded.");
             }
             else
-            {   
+            {
                 //load model and config
                 net = Dnn.readNet(weight, cfg);
             }
@@ -115,8 +147,9 @@ namespace OpenCvYolo3
             // Show Image
             Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
             Texture2D texture = new Texture2D(img.cols(), img.rows(), TextureFormat.RGBA32, false);
+            //test.text = "img.cols(): " + img.cols() + " img.rows(): " + img.rows();
             Utils.matToTexture2D(img, texture);
-            gameObject.GetComponent<Renderer>().material.mainTexture = texture;
+            RawImage.texture = texture;
             Utils.setDebugMode(false);
         }
 
@@ -195,6 +228,11 @@ namespace OpenCvYolo3
 
             Dnn.NMSBoxes(bboxes, scores, threshold, nmsThreshold, indices);
 
+            Debug.Log ("indices.dump () "+indices.dump ());
+            Debug.Log ("indices.ToString () "+indices.ToString());
+
+            if (indices.rows() < 1 || indices.cols() < 1) return;
+
             int[] indicesA = indices.toArray();
 
             foreach (var i in indicesA)
@@ -225,7 +263,7 @@ namespace OpenCvYolo3
 
             //draw result
             double x1 = (centerX - width / 2) < 0 ? 0 : centerX - width / 2; //avoid left side over edge
-            Imgproc.rectangle(image, new Point(x1, centerY - height / 2), new Point(centerX + width / 2, centerY + height / 2), Colors[classes], 2);
+            Imgproc.rectangle(image, new Point(x1, centerY - height / 2), new Point(centerX + width / 2, centerY + height / 2), Colors[classes], 10);
 
             int[] baseline = new int[1];
             var textSize = Imgproc.getTextSize(label, 4, 0.5, 1, baseline);
@@ -238,8 +276,8 @@ namespace OpenCvYolo3
                 mean += Colors[classes].val[i];
             }
             mean = mean / 4;
-            
-            Scalar textColor = mean < 70 ? new Scalar(255,255,255,255) : new Scalar(0);
+
+            Scalar textColor = mean < 70 ? new Scalar(255, 255, 255, 255) : new Scalar(0);
             Imgproc.putText(image, label, new Point(x1, centerY - height / 2 - baseline[0]), Imgproc.FONT_HERSHEY_TRIPLEX, 0.5, textColor);
         }
 
@@ -279,3 +317,4 @@ namespace OpenCvYolo3
 
     }
 }
+

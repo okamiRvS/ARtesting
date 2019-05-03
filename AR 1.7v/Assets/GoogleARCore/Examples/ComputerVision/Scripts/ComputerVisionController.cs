@@ -102,6 +102,8 @@ namespace GoogleARCore.Examples.ComputerVision
         private bool m_Resolutioninitialized = false;
         private Text m_ImageTextureToggleText;
 
+        public Text test;
+
         /// <summary>
         /// The Unity Start() method.
         /// </summary>
@@ -194,6 +196,7 @@ namespace GoogleARCore.Examples.ComputerVision
             // Pause and resume the ARCore session to apply the camera configuration.
             ARSessionManager.enabled = false;
             ARSessionManager.enabled = true;
+
         }
 
         /// <summary>
