@@ -205,6 +205,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 896679035}
+  DetectedPlanePrefab: {fileID: 1654175882956584, guid: 6a35c744e5010405c847fad90282d2be,
+    type: 2}
   Prefab:
   - {fileID: 1168316032286452, guid: 01980e71950e8104ab51593480cc7436, type: 2}
   - {fileID: 1168316032286452, guid: 01980e71950e8104ab51593480cc7436, type: 2}
@@ -280,8 +282,7 @@ Prefab:
       propertyPath: m_isInputParsingRequired
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 114813560059052804, guid: 4ac4cbeedcf351a42b1851db6b1c405c, type: 2}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4ac4cbeedcf351a42b1851db6b1c405c, type: 2}
   m_IsPrefabAsset: 0
 --- !u!20 &896679035 stripped

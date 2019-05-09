@@ -81,8 +81,6 @@ namespace GoogleARCore.Examples.HelloAR {
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon |
                 TrackableHitFlags.FeaturePointWithSurfaceNormal;
 
-            Debug.Log("touch.position: " + touch.position);
-
             if (Frame.Raycast(touch.position.x, touch.position.y, raycastFilter, out hit)) {
                 // Use hit pose and camera pose to check if hittest is from the
                 // back of the plane, if it is, no need to create the anchor.
@@ -103,9 +101,6 @@ namespace GoogleARCore.Examples.HelloAR {
 
                         // Instantiate Andy model at the hit pose.
                         var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
-
-                        Debug.Log("hit.Pose.position: " + hit.Pose.position + ",  hit.Pose.rotation: " + hit.Pose.rotation);
-                        Debug.DrawRay(FirstPersonCamera.transform.position, hit.Pose.position, Color.green, 1);
 
                         // Compensate for the hitPose rotation facing away from the raycast (i.e. camera).
                         andyObject.transform.Rotate(0, k_ModelRotation, 0, Space.Self);
