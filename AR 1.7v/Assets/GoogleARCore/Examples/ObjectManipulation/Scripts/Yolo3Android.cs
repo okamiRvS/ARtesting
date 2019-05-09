@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System;
 using System.Linq;
 using System.Collections.Generic;
 using OpenCVForUnity.ImgcodecsModule;
@@ -9,6 +8,7 @@ using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.DnnModule;
 using System.Globalization;
 using UnityEngine.UI;
+using GoogleARCore.Examples.ObjectManipulation;
 
 namespace OpenCvYolo3
 {
@@ -23,6 +23,7 @@ namespace OpenCvYolo3
     {
         public RawImage RawImage;
         public Text test;
+        public GameObject controller;
 
         #region
         private string cfg = "yolov3.cfg";
@@ -40,6 +41,7 @@ namespace OpenCvYolo3
         private static string[] Labels;
 
         Mat img = null;
+        private static AndyPlacementManipulator instantObj;
         #endregion
 
         void Start()
@@ -56,7 +58,9 @@ namespace OpenCvYolo3
                 .Select(x => new Scalar((int)UnityEngine.Random.Range(0f, 256f), (int)UnityEngine.Random.Range(0f, 256f), (int)UnityEngine.Random.Range(0f, 256f)))
                 .ToArray();
 
-            InitializeImage();
+            instantObj = controller.GetComponent<AndyPlacementManipulator>();
+
+            //InitializeImage();
         }
 
         public void InitializeImage()
@@ -239,6 +243,9 @@ namespace OpenCvYolo3
             {
                 var box = boxes[i];
                 Draw(image, classIds[i], confidences[i], probabilities[i], box.x, box.y, box.width, box.height);
+                Debug.Log(Labels[classIds[i]] + ", center: " + box.x + ", " + box.y);
+
+                instantObj.instantiateObj((float)box.x, (float)box.y, Labels[classIds[i]]);
             }
 
         }

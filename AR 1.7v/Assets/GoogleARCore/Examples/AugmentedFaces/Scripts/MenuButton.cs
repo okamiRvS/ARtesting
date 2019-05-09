@@ -138,6 +138,14 @@ public class MenuButton : MonoBehaviour {
         a.InitializeImage("0.png");
     }
 
+    public void DeleteObj()
+    {
+        foreach (GameObject anchor in GameObject.FindGameObjectsWithTag("anchor"))
+        {
+            Destroy(anchor);
+        }
+    }
+
     public void QuitGame() {
 
         Debug.Log("QUIT !");
