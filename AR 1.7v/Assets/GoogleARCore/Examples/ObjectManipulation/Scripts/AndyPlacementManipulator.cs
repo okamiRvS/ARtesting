@@ -75,7 +75,50 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return;
             }
 
-            instantiateObj(gesture.StartPosition.x, gesture.StartPosition.y);
+            // Raycast against the location the player touched to search for planes.
+            TrackableHit hit;
+            TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon;
+
+            if (Frame.Raycast(gesture.StartPosition.x, gesture.StartPosition.y, raycastFilter, out hit))
+            {
+                // Use hit pose and camera pose to check if hittest is from the
+                // back of the plane, if it is, no need to create the anchor.
+                if ((hit.Trackable is DetectedPlane) &&
+                    Vector3.Dot(FirstPersonCamera.transform.position - hit.Pose.position,
+                        hit.Pose.rotation * Vector3.up) < 0)
+                {
+                    Debug.Log("Hit at back of the current DetectedPlane");
+                }
+                else
+                {
+                    // Randomically choose a model for the Trackable that got hit.
+                    GameObject prefab;
+                    prefab = Prefab[(int)Random.Range(0, Prefab.Length)];
+
+                    // Instantiate Andy model at the hit pose.
+                    var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+                    Debug.Log("hit.Pose.position: " + hit.Pose.position + ",  hit.Pose.rotation: " + hit.Pose.rotation);
+
+                    // Instantiate manipulator.
+                    var manipulator = Instantiate(ManipulatorPrefab, hit.Pose.position, hit.Pose.rotation);
+
+                    // Make Andy model a child of the manipulator.
+                    andyObject.transform.parent = manipulator.transform;
+
+                    // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
+                    // world evolves.
+                    var anchor = hit.Trackable.CreateAnchor(hit.Pose);
+                    //anchor.gameObject.tag = "anchor";
+
+                    // Make manipulator a child of the anchor.
+                    manipulator.transform.parent = anchor.transform;
+
+                    // Select the placed object.
+                    manipulator.GetComponent<Manipulator>().Select();
+                }
+            }
+
+            //instantiateObj(gesture.StartPosition.x, gesture.StartPosition.y);
         }
 
         public void instantiateObj(float centerX, float centerY, string classNameObj = null)
