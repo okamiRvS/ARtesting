@@ -70,10 +70,9 @@ namespace OpenCvYolo3
 
             instantObj = controller.GetComponent<AndyPlacementManipulator>();
 
-            gameObject.SetActive(false);
-            debugBar.SetActive(true);
             debugText.text = "imgPath: " + image;
             debugText.text = debugText.text + "\n" + "Display.main.systemHeight: " + Display.main.systemHeight + "\n" + "Display.main.systemWidth: " + Display.main.systemWidth;
+            debugText.text = debugText.text + "\n" + "Display.main.systemHeight * 0.2f: " + Display.main.systemHeight * 0.2f;
         }
 
         public void InitializeImage()

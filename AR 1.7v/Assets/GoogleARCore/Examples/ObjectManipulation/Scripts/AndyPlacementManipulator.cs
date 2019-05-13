@@ -82,7 +82,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return;
             }
 
-            if (gesture.StartPosition.y > 490)
+            if (gesture.StartPosition.y > Display.main.systemHeight * 0.2f)
             {
                 instantiateObj(gesture.StartPosition.x, gesture.StartPosition.y);
             }

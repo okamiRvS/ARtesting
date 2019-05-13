@@ -31,6 +31,12 @@ public class MenuButton : MonoBehaviour {
     [Tooltip("The debugText text.")]
     [SerializeField] private Text debugText = null;
 
+    /// <summary>
+    /// The snackbar Game Object.
+    /// </summary>
+    [Tooltip("The currentFrme Game Object.")]
+    [SerializeField] private GameObject currentFrme = null;
+
     private bool GridStatus = true;
 
     // [] 1
@@ -174,6 +180,18 @@ public class MenuButton : MonoBehaviour {
         else
         {
             debugBar.SetActive(true);
+        }
+    }
+
+    public void PicView()
+    {
+        if (currentFrme.activeSelf)
+        {
+            currentFrme.SetActive(false);
+        }
+        else
+        {
+            currentFrme.SetActive(true);
         }
     }
 }
