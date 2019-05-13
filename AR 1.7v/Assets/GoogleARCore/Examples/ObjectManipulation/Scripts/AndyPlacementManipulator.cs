@@ -71,8 +71,6 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnEndManipulation(TapGesture gesture)
         {
-            debugText.text = debugText.text + "\n" + "gesture: " + gesture.TargetObject.layer;
-
             if (gesture.WasCancelled)
             {
                 return;
@@ -84,11 +82,16 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 return;
             }
 
-            instantiateObj(gesture.StartPosition.x, gesture.StartPosition.y);
+            if (gesture.StartPosition.y > 490)
+            {
+                instantiateObj(gesture.StartPosition.x, gesture.StartPosition.y);
+            }
         }
 
         public void instantiateObj(float centerX, float centerY, string classNameObj = null)
         {
+            debugText.text = debugText.text + "\n" + "gesture.x: " + centerX + " gesture.y: " + centerY;
+
             // Raycast against the location the player touched to search for planes.
             TrackableHit hit;
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon;

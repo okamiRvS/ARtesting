@@ -20,6 +20,12 @@ public class MenuButton : MonoBehaviour {
     public RawImage RawImage;
 
     /// <summary>
+    /// The snackbar Game Object.
+    /// </summary>
+    [Tooltip("The debugBar Game Object.")]
+    [SerializeField] private GameObject debugBar = null;
+
+    /// <summary>
     /// The snackbar text.
     /// </summary>
     [Tooltip("The debugText text.")]
@@ -157,5 +163,17 @@ public class MenuButton : MonoBehaviour {
 
         Debug.Log("QUIT !");
         Application.Quit();
+    }
+
+    public void Console()
+    {
+        if(debugBar.activeSelf)
+        {
+            debugBar.SetActive(false);
+        } 
+        else
+        {
+            debugBar.SetActive(true);
+        }
     }
 }

@@ -73,6 +73,7 @@ namespace OpenCvYolo3
             gameObject.SetActive(false);
             debugBar.SetActive(true);
             debugText.text = "imgPath: " + image;
+            debugText.text = debugText.text + "\n" + "Display.main.systemHeight: " + Display.main.systemHeight + "\n" + "Display.main.systemWidth: " + Display.main.systemWidth;
         }
 
         public void InitializeImage()
@@ -178,7 +179,7 @@ namespace OpenCvYolo3
         /// <param name="threshold"></param>
         /// <param name="nmsThreshold">threshold for nms</param>
         /// <param name="nms">Enable Non-maximum suppression or not</param>
-        private static void GetResult(IEnumerable<Mat> output, Mat image, float threshold, float nmsThreshold, bool nms = true)
+        private void GetResult(IEnumerable<Mat> output, Mat image, float threshold, float nmsThreshold, bool nms = true)
         {
             //for nms
             List<int> classIds = new List<int>();
@@ -257,7 +258,7 @@ namespace OpenCvYolo3
                 var box = boxes[i];
                 Draw(image, classIds[i], confidences[i], probabilities[i], box.x, box.y, box.width, box.height);
                 Debug.Log(Labels[classIds[i]] + ", center: " + box.x + ", " + box.y);
-
+                debugText.text = debugText.text + "\n" + Labels[classIds[i]] + ", center: " + box.x + ", " + box.y;
                 instantObj.instantiateObj((float)box.x, (float)box.y, Labels[classIds[i]]);
             }
 
