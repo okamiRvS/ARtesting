@@ -18,7 +18,13 @@ using OpenCVForUnity.ImgcodecsModule;
 public class MenuButton : MonoBehaviour {
 
     public RawImage RawImage;
-    public Text test;
+
+    /// <summary>
+    /// The snackbar text.
+    /// </summary>
+    [Tooltip("The debugText text.")]
+    [SerializeField] private Text debugText = null;
+
     private bool GridStatus = true;
 
     // [] 1
@@ -130,7 +136,8 @@ public class MenuButton : MonoBehaviour {
             destPath = Path.Combine(destPath, "dnn/0.png");
         }
 
-        test.text = destPath;
+        debugText.text = debugText.text + "\n" + "destPath: " + destPath;
+
         File.WriteAllBytes(destPath, encodedPng);
 
         // Send Mat output_image to Yolo3Android to process objectDetection
