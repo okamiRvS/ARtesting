@@ -22,6 +22,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
 {
     using GoogleARCore;
     using UnityEngine;
+    using UnityEngine.UI;
 
     /// <summary>
     /// Controls the placement of Andy objects via a tap gesture.
@@ -44,6 +45,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
         public GameObject ManipulatorPrefab;
 
         /// <summary>
+        /// The snackbar text.
+        /// </summary>
+        [Tooltip("The debugText text.")]
+        [SerializeField] private Text debugText = null;
+
+        /// <summary>
         /// Returns true if the manipulation can be started for the given gesture.
         /// </summary>
         /// <param name="gesture">The current gesture.</param>
@@ -64,6 +71,8 @@ namespace GoogleARCore.Examples.ObjectManipulation
         /// <param name="gesture">The current gesture.</param>
         protected override void OnEndManipulation(TapGesture gesture)
         {
+            debugText.text = debugText.text + "\n" + "gesture: " + gesture.TargetObject.layer;
+
             if (gesture.WasCancelled)
             {
                 return;
@@ -113,7 +122,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                     // world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                    //anchor.gameObject.tag = "anchor";
+                    anchor.gameObject.tag = "anchor";
 
                     // Make manipulator a child of the anchor.
                     manipulator.transform.parent = anchor.transform;
