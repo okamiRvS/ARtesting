@@ -22,19 +22,8 @@ namespace OpenCvYolo3
     public class Yolo3Android : MonoBehaviour
     {
         public RawImage RawImage;
+        public Text test;
         public GameObject controller;
-
-        /// <summary>
-        /// The snackbar Game Object.
-        /// </summary>
-        [Tooltip("The debugBar Game Object.")]
-        [SerializeField] private GameObject debugBar = null;
-
-        /// <summary>
-        /// The snackbar text.
-        /// </summary>
-        [Tooltip("The debugText text.")]
-        [SerializeField] private Text debugText = null;
 
         #region
         private string cfg = "yolov3.cfg";
@@ -61,6 +50,7 @@ namespace OpenCvYolo3
             weight = Utils.getFilePath("dnn/" + weight);
             names = Utils.getFilePath("dnn/" + names);
             image = Utils.getFilePath("dnn/" + image);
+            test.text = "Image path: " + image;
 
             Labels = readClassNames(names).ToArray();
             Colors = Enumerable
@@ -70,9 +60,7 @@ namespace OpenCvYolo3
 
             instantObj = controller.GetComponent<AndyPlacementManipulator>();
 
-            gameObject.SetActive(false);
-            debugBar.SetActive(true);
-            debugText.text = "imgPath: " + image;
+            //InitializeImage();
         }
 
         public void InitializeImage()
@@ -110,7 +98,6 @@ namespace OpenCvYolo3
 
         public void ObjectDetection()
         {
-            gameObject.SetActive(true);
             // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
             Utils.setDebugMode(true);
 
