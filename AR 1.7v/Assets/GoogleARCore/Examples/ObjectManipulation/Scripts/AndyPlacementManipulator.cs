@@ -117,7 +117,7 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                     // world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                    anchor.gameObject.tag = "anchor";
+                    //anchor.gameObject.tag = "anchor";
 
                     // Make manipulator a child of the anchor.
                     manipulator.transform.parent = anchor.transform;
