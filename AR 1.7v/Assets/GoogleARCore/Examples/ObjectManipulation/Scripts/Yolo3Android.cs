@@ -25,12 +25,6 @@ namespace OpenCvYolo3
         public GameObject controller;
 
         /// <summary>
-        /// The snackbar Game Object.
-        /// </summary>
-        [Tooltip("The debugBar Game Object.")]
-        [SerializeField] private GameObject debugBar = null;
-
-        /// <summary>
         /// The snackbar text.
         /// </summary>
         [Tooltip("The debugText text.")]
@@ -72,16 +66,16 @@ namespace OpenCvYolo3
 
             gameObject.SetActive(false);
 
+            /*
             debugText.text = "imgPath: " + image;
             debugText.text = debugText.text + "\n" + "Display.main.systemHeight: " + Display.main.systemHeight + "\n" + "Display.main.systemWidth: " + Display.main.systemWidth;
             debugText.text = debugText.text + "\n" + "Display.main.systemHeight * 0.2f: " + Display.main.systemHeight * 0.2f;
+            */
         }
 
         public void InitializeImage()
         {
             img = Imgcodecs.imread(image);
-            Debug.Log("First: " + CvType.typeToString(img.type()));
-            Debug.Log("FirstToString: " + img.ToString());
             if (img.empty())
             {
                 Debug.LogError("Image " + image + " is not loaded.");
@@ -101,6 +95,7 @@ namespace OpenCvYolo3
         {
             image = Utils.getFilePath("dnn/" + image);
             img = Imgcodecs.imread(image);
+            Debug.Log("img " + img.ToString());
             if (img.empty())
             {
                 Debug.LogError("Image " + image + " is not loaded.");
@@ -113,6 +108,7 @@ namespace OpenCvYolo3
         public void ObjectDetection()
         {
             gameObject.SetActive(true);
+
             // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
             Utils.setDebugMode(true);
 
@@ -167,7 +163,6 @@ namespace OpenCvYolo3
             // Show Image
             Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
             Texture2D texture = new Texture2D(img.cols(), img.rows(), TextureFormat.RGBA32, false);
-            //test.text = "img.cols(): " + img.cols() + " img.rows(): " + img.rows();
             Utils.matToTexture2D(img, texture);
             RawImage.texture = texture;
             Utils.setDebugMode(false);
@@ -244,7 +239,6 @@ namespace OpenCvYolo3
 
             bboxes.fromList(boxes);
             scores.fromList(probabilities);
-
 
             Dnn.NMSBoxes(bboxes, scores, threshold, nmsThreshold, indices);
 

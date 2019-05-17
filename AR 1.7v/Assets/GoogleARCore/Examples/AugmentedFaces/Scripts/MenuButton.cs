@@ -122,22 +122,42 @@ public class MenuButton : MonoBehaviour {
 
         Mat output_image = new Mat(image.Height, image.Width, CvType.CV_8UC3);
         Utils.copyToMat(RGBhandle.AddrOfPinnedObject(), output_image);
+            
+        // Send Mat output_image to Yolo3Android to process objectDetection
+        Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
 
-        Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGBA_NV12);
-        Debug.Log("input_image" + CvType.typeToString(input_image.type()));
-        Debug.Log("output_image" + CvType.typeToString(output_image.type()));
+        if (false)
+        {
+            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGB_NV12);
+            a.InitializeImage(output_image);
+        }
+        else
+        {
+            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGBA_NV12);
+
+            // Create a new texture object
+            Texture2D result = new Texture2D(image.Width, image.Height, TextureFormat.RGB24, false);
+            Utils.matToTexture2D(output_image, result);
+            RawImage.texture = result;
+            savePic(result);
+
+            a.InitializeImage("0.png");
+        }
+
+        /*
+        Debug.Log("input_imageToString" + input_image.ToString());
         Debug.Log("output_imageToString " + output_image.ToString());
-        
-        // Create a new texture object
-        Texture2D result = new Texture2D(image.Width, image.Height, TextureFormat.RGB24, false);
 
-        Utils.matToTexture2D(output_image, result);
+        debugText.text = debugText.text + "\n" + "input_imageToString " + input_image.ToString();
+        debugText.text = debugText.text + "\n" + "output_imageToString " + output_image.ToString();
+        */
 
         YUVhandle.Free();
         RGBhandle.Free();
+    }
 
-        RawImage.texture = result;
-
+    public void savePic(Texture2D result)
+    {
         // Save pic on streamngAssets
         byte[] encodedPng = result.EncodeToPNG();
         string destPath = Path.Combine(Application.streamingAssetsPath, "dnn/0.png");
@@ -151,10 +171,6 @@ public class MenuButton : MonoBehaviour {
         debugText.text = debugText.text + "\n" + "destPath: " + destPath;
 
         File.WriteAllBytes(destPath, encodedPng);
-
-        // Send Mat output_image to Yolo3Android to process objectDetection
-        Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
-        a.InitializeImage("0.png");
     }
 
     public void DeleteObj()

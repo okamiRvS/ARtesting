@@ -1800,6 +1800,10 @@ MonoBehaviour:
   - {fileID: 1168316032286452, guid: 01980e71950e8104ab51593480cc7436, type: 2}
   ManipulatorPrefab: {fileID: 1122865395318488, guid: 24556cd4924884d9aaa3d80135c8021d,
     type: 2}
+  foodString:
+  - banana
+  - apple
+  - orange
   debugText: {fileID: 1913568838}
 --- !u!4 &1812720043
 Transform:
@@ -2029,7 +2033,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RawImage: {fileID: 1937163984}
   controller: {fileID: 1812720041}
-  debugBar: {fileID: 328690808}
   debugText: {fileID: 1913568838}
 --- !u!114 &1937163984
 MonoBehaviour:

@@ -46,7 +46,12 @@ namespace GoogleARCore.Examples.ObjectManipulation
         public GameObject ManipulatorPrefab;
 
         /// <summary>
-        /// The snackbar text.
+        /// List of food.
+        /// </summary>
+        public string[] foodString;
+
+        /// <summary>
+        /// The debugText text.
         /// </summary>
         [Tooltip("The debugText text.")]
         [SerializeField] private Text debugText = null;
@@ -107,11 +112,10 @@ namespace GoogleARCore.Examples.ObjectManipulation
                 {
                     Debug.Log("Hit at back of the current DetectedPlane");
                 }
-                else
+                else if (classNameObj==null || foodCheck(classNameObj))
                 {
                     // Randomically choose a model for the Trackable that got hit.
-                    GameObject prefab;
-                    prefab = Prefab[(int)Random.Range(0, Prefab.Length)];
+                    GameObject prefab =  Prefab[(int)Random.Range(0, Prefab.Length)];
 
                     // Instantiate Andy model at the hit pose.
                     Quaternion rotation = hit.Pose.rotation;
@@ -142,6 +146,19 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     manipulator.GetComponent<Manipulator>().Select();
                 }
             }
+        }
+
+        private bool foodCheck(string food)
+        {
+            for(int i=0; i<food.Length; i++)
+            {
+                if(food == foodString[i])
+                {
+                    debugText.text = debugText.text + "\n" + "food: " + foodString[i];
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
