@@ -21,6 +21,7 @@
 namespace GoogleARCore.Examples.ObjectManipulation
 {
     using GoogleARCore;
+    using System.Collections.Generic;
     using UnityEngine;
     using UnityEngine.UI;
 
@@ -113,7 +114,14 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     prefab = Prefab[(int)Random.Range(0, Prefab.Length)];
 
                     // Instantiate Andy model at the hit pose.
-                    var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+                    Quaternion rotation = hit.Pose.rotation;
+                    if (classNameObj == "banana")
+                    {
+                        prefab = Prefab[0];
+                        rotation.z = -0.9f;
+                    }
+                    debugText.text = debugText.text + "\n" + "classNameObj: " + classNameObj;
+                    var andyObject = Instantiate(prefab, hit.Pose.position, rotation);
                     Debug.Log("hit.Pose.position: " + hit.Pose.position + ",  hit.Pose.rotation: " + hit.Pose.rotation);
 
                     // Instantiate manipulator.

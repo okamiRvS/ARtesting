@@ -1796,7 +1796,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 646831371}
   Prefab:
-  - {fileID: 1287088417844050, guid: 5bb99d58072a840a39e52b18638ce96e, type: 2}
+  - {fileID: 1971242343646244, guid: 663f88b76530eb543a0011daf41fd074, type: 2}
   - {fileID: 1168316032286452, guid: 01980e71950e8104ab51593480cc7436, type: 2}
   ManipulatorPrefab: {fileID: 1122865395318488, guid: 24556cd4924884d9aaa3d80135c8021d,
     type: 2}

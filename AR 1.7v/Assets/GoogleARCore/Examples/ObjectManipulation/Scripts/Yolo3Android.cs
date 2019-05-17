@@ -157,6 +157,7 @@ namespace OpenCvYolo3
 
                 tm.stop();
                 Debug.Log("Runtime: " + tm.getTimeMilli() + " ms");
+                debugText.text = debugText.text + "\n" + "Runtime: " + tm.getTimeMilli() + " ms";
                 #endregion
 
                 //get result from all output
