@@ -1,23 +1,25 @@
 ﻿using GoogleARCore;
 using GoogleARCore.Examples.Common;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
-using GoogleARCore.Examples.ComputerVision;
-using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCvYolo3;
-using OpenCVForUnity.ImgcodecsModule;
 
-public class MenuButton : MonoBehaviour {
+public class MenuButton : MonoBehaviour
+{
 
     public RawImage RawImage;
+
+    /// <summary>
+    /// The prefab to measure.
+    /// </summary>
+    [Tooltip("The prefab to measure.")]
+    [SerializeField] private GameObject prefab = null;
 
     /// <summary>
     /// The snackbar Game Object.
@@ -59,21 +61,26 @@ public class MenuButton : MonoBehaviour {
         return supportedConfigurations.Count - 1;
     }
     // [] 1
-
-    public void SetGrid () {
-        foreach (GameObject plane in GameObject.FindGameObjectsWithTag("plane")) {
+    
+    public void SetGrid()
+    {
+        foreach (GameObject plane in GameObject.FindGameObjectsWithTag("plane"))
+        {
             DetectedPlaneVisualizer t = plane.GetComponent<DetectedPlaneVisualizer>();
             t.UpdateGridView(GridStatus);
         }
 
-        if(GridStatus) {
+        if (GridStatus)
+        {
             GridStatus = false;
-        } else {
+        }
+        else
+        {
             GridStatus = true;
         }
     }
 
-     public void TakeFrame()
+    public void TakeFrame()
     {
         // YUV TO RGB
         // https://github.com/google-ar/arcore-unity-sdk/issues/221
@@ -88,7 +95,7 @@ public class MenuButton : MonoBehaviour {
 
         // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
         // I will explain later, why.
-        int bufferSize = (int)(image.Width * image.Height *1.5f);
+        int bufferSize = (int)(image.Width * image.Height * 1.5f);
         byte[] YUVimage = new byte[bufferSize];
 
         // As CameraImageBytes keep the Y, U and V data in three separate
@@ -122,7 +129,7 @@ public class MenuButton : MonoBehaviour {
 
         Mat output_image = new Mat(image.Height, image.Width, CvType.CV_8UC3);
         Utils.copyToMat(RGBhandle.AddrOfPinnedObject(), output_image);
-            
+
         // Send Mat output_image to Yolo3Android to process objectDetection
         Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
 
@@ -173,15 +180,8 @@ public class MenuButton : MonoBehaviour {
         File.WriteAllBytes(destPath, encodedPng);
     }
 
-    public void DeleteObj()
+    public void QuitGame()
     {
-        foreach (GameObject anchor in GameObject.FindGameObjectsWithTag("anchor"))
-        {
-            Destroy(anchor);
-        }
-    }
-
-    public void QuitGame() {
 
         Debug.Log("QUIT !");
         Application.Quit();
@@ -189,10 +189,10 @@ public class MenuButton : MonoBehaviour {
 
     public void Console()
     {
-        if(debugBar.activeSelf)
+        if (debugBar.activeSelf)
         {
             debugBar.SetActive(false);
-        } 
+        }
         else
         {
             debugBar.SetActive(true);
@@ -209,5 +209,62 @@ public class MenuButton : MonoBehaviour {
         {
             currentFrme.SetActive(true);
         }
+    }
+
+
+    Vector3[] points = new Vector3[2];
+    bool init = true;
+    List<GameObject> l2p = new List<GameObject>();
+    LineRenderer line;
+
+    public void Distance2Point()
+    {
+        line = GetComponent<LineRenderer>();
+
+        TrackableHit hit;
+        TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon;
+        if (Frame.Raycast(Display.main.systemWidth / 2, Display.main.systemHeight / 2, raycastFilter, out hit))
+        {
+            if (hit.Trackable is DetectedPlane)
+            {
+                if (init)
+                {
+                    if (l2p.Count != 0)
+                    {
+                        Destroy(l2p[0]);
+                        Destroy(l2p[1]);
+                        l2p.Clear();
+
+                        line.enabled = false;
+                    }
+
+                    points[0] = hit.Pose.position;
+                    l2p.Add(Instantiate(prefab, hit.Pose.position, hit.Pose.rotation));
+                    l2p[0].tag = "anchor";
+                    init = false;
+                }
+                else
+                {
+                    points[1] = hit.Pose.position;
+                    debugText.text = debugText.text + "\n" + "Lenght: " + Vector3.Distance(points[0],points[1]) * 100 + "cm" ;
+                    l2p.Add(Instantiate(prefab, hit.Pose.position, hit.Pose.rotation));
+                    l2p[1].tag = "anchor";
+
+                    line.enabled = true;
+                    line.SetPositions(points);
+                    init = true;
+                }
+            }
+        }
+    }
+
+    public void DeleteObj()
+    {
+        foreach (GameObject anchor in GameObject.FindGameObjectsWithTag("anchor"))
+        {
+            Destroy(anchor);
+        }
+
+        line.enabled = false;
     }
 }

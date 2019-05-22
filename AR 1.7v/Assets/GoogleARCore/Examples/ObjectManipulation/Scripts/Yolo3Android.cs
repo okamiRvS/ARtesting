@@ -25,7 +25,7 @@ namespace OpenCvYolo3
         public GameObject controller;
 
         /// <summary>
-        /// The snackbar text.
+        /// The debugText.
         /// </summary>
         [Tooltip("The debugText text.")]
         [SerializeField] private Text debugText = null;

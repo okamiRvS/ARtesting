@@ -118,14 +118,17 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     GameObject prefab =  Prefab[(int)Random.Range(0, Prefab.Length)];
 
                     // Instantiate Andy model at the hit pose.
-                    Quaternion rotation = hit.Pose.rotation;
                     if (classNameObj == "banana")
                     {
                         prefab = Prefab[0];
-                        rotation.z = -0.9f;
+                    }
+                    else if (classNameObj == "apple")
+                    {
+                        prefab = Prefab[1];
                     }
                     debugText.text = debugText.text + "\n" + "classNameObj: " + classNameObj;
-                    var andyObject = Instantiate(prefab, hit.Pose.position, rotation);
+                    var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
+
                     Debug.Log("hit.Pose.position: " + hit.Pose.position + ",  hit.Pose.rotation: " + hit.Pose.rotation);
 
                     // Instantiate manipulator.
@@ -150,8 +153,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         private bool foodCheck(string food)
         {
-            for(int i=0; i<food.Length; i++)
+            for(int i=0; i< foodString.Length; i++)
             {
+                Debug.Log(i);
                 if(food == foodString[i])
                 {
                     debugText.text = debugText.text + "\n" + "food: " + foodString[i];
