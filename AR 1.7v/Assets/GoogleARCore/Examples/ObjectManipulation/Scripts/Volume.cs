@@ -6,18 +6,27 @@ using UnityEngine.UI;
 
 public class Volume : MonoBehaviour
 {
+    //private Text volumeText { get; set; }
 
-    private Text volumeText { get; set; }
+    private bool check = true;
+    Mesh mesh;
+    float volume = 0;
 
-    private void Awake()
+    private void Start()
     {
-        volumeText.transform.position = gameObject.transform.up * 2;
+        mesh = GetComponent<MeshFilter>().sharedMesh;
+    }
 
-        Mesh mesh = GetComponent<MeshFilter>().sharedMesh;
-        float volume = VolumeOfMesh(mesh);
-        string msg = "The volume of the mesh is " + volume + " cube units.";
-        Debug.Log(msg);
-        volumeText.text = volume.ToString();
+    private void Update()
+    {
+        //volumeText.transform.position = gameObject.transform.up * 2;
+        if (check)
+        {
+            StartCoroutine(VolumeOfMesh());
+            check = false;
+        }
+        //volumeText.text = volume.ToString();
+        Debug.Log("The volume of the mesh is " + volume * Mathf.Pow(gameObject.transform.lossyScale.x, 3f) * Mathf.Pow(10, 6) + " cm^3.");
     }
 
     public float SignedVolumeOfTriangle(Vector3 p1, Vector3 p2, Vector3 p3)
@@ -31,9 +40,8 @@ public class Volume : MonoBehaviour
         return (1.0f / 6.0f) * (-v321 + v231 + v312 - v132 - v213 + v123);
     }
 
-    public float VolumeOfMesh(Mesh mesh)
+    IEnumerator VolumeOfMesh()
     {
-        float volume = 0;
         Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
         for (int i = 0; i < mesh.triangles.Length; i += 3)
@@ -42,7 +50,13 @@ public class Volume : MonoBehaviour
             Vector3 p2 = vertices[triangles[i + 1]];
             Vector3 p3 = vertices[triangles[i + 2]];
             volume += SignedVolumeOfTriangle(p1, p2, p3);
+
+            if (i % 1000 == 0)
+            {
+                Debug.Log("mesh.triangles.Length: " + mesh.triangles.Length + ", i: " + i + "gameObject.transform.lossyScale.x: " + gameObject.transform.lossyScale.x);
+                yield return new WaitForSeconds(.3f);
+            }
         }
-        return Mathf.Abs(volume);
+        volume = Mathf.Abs(volume);
     }
 }

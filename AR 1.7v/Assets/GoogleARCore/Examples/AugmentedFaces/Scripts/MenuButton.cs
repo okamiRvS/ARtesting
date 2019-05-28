@@ -9,6 +9,7 @@ using OpenCVForUnity.CoreModule;
 using OpenCVForUnity.ImgprocModule;
 using OpenCVForUnity.UnityUtils;
 using OpenCvYolo3;
+using GoogleARCore.Examples.ObjectManipulation;
 
 public class MenuButton : MonoBehaviour
 {
@@ -41,6 +42,9 @@ public class MenuButton : MonoBehaviour
 
     private bool GridStatus = true;
 
+    private static AndyPlacementManipulator instantObj;
+    public GameObject controller;
+
     // [] 1
     public ARCoreSession ARSessionManager;
     private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration = null;
@@ -54,6 +58,8 @@ public class MenuButton : MonoBehaviour
         // Pause and resume the ARCore session to apply the camera configuration.
         ARSessionManager.enabled = false;
         ARSessionManager.enabled = true;
+
+        instantObj = controller.GetComponent<AndyPlacementManipulator>();
     }
 
     private int _ChooseCameraConfiguration(List<CameraConfig> supportedConfigurations)
@@ -219,6 +225,9 @@ public class MenuButton : MonoBehaviour
 
     public void Distance2Point()
     {
+        debugText.text = debugText.text + "\n" + "Volume banana: " + test.volume["banana"] + "cm^3";
+        debugText.text = debugText.text + "\n" + "Volume apple: " + test.volume["apple"] + "cm^3";
+
         line = GetComponent<LineRenderer>();
 
         TrackableHit hit;
@@ -266,5 +275,10 @@ public class MenuButton : MonoBehaviour
         }
 
         line.enabled = false;
+    }
+
+    public void InstantiateRandom()
+    {
+        instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2);
     }
 }
