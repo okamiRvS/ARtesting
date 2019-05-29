@@ -279,6 +279,6 @@ public class MenuButton : MonoBehaviour
 
     public void InstantiateRandom()
     {
-        instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2);
+        instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "banana");
     }
 }

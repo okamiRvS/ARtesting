@@ -134,13 +134,6 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     // Instantiate manipulator.
                     var manipulator = Instantiate(ManipulatorPrefab, hit.Pose.position, hit.Pose.rotation);
 
-                    if (classNameObj != null)
-                    {
-                        test s = manipulator.transform.Find("textVolume").GetComponent<test>();
-                        s.whoIam = classNameObj;
-                        Debug.Log("andy creation: " + s.whoIam);
-                    }
-
                     // Make Andy model a child of the manipulator.
                     andyObject.transform.parent = manipulator.transform;
 
@@ -151,6 +144,13 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
                     // Make manipulator a child of the anchor.
                     manipulator.transform.parent = anchor.transform;
+
+                    if (classNameObj != null)
+                    {
+                        test s = manipulator.transform.Find("textVolume").GetComponent<test>();
+                        s.whoIam = classNameObj;
+                        s.changeText();
+                    }
 
                     // Select the placed object.
                     manipulator.GetComponent<Manipulator>().Select();

@@ -2593,7 +2593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FirstPersonCamera: {fileID: 646831371}
   Prefab:
-  - {fileID: 100000, guid: c2c59df5c6ad2dd4e81753eeaacdea60, type: 3}
+  - {fileID: 100000, guid: cfd8832ebffadf94d931b5a2ce986197, type: 3}
   - {fileID: 100000, guid: e7b5d84c6144a164e808d9fc49bbe939, type: 3}
   - {fileID: 1199197890703304, guid: 2e5d7e72a7d1cfb4cb77f4a2c0806814, type: 2}
   ManipulatorPrefab: {fileID: 1235887659476212, guid: 47d16ffe0a076dc4382630cf81fe95ec,
