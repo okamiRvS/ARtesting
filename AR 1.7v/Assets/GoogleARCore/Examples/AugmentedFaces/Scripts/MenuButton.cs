@@ -44,6 +44,7 @@ public class MenuButton : MonoBehaviour
 
     private static AndyPlacementManipulator instantObj;
     public GameObject controller;
+    public GameObject planeGenerator;
 
     // [] 1
     public ARCoreSession ARSessionManager;
@@ -94,10 +95,15 @@ public class MenuButton : MonoBehaviour
         // https://github.com/google-ar/arcore-unity-sdk/issues/527
         // https://stackoverflow.com/questions/55495030/how-to-use-the-arcore-camera-image-in-opencv-in-an-unity-android-app/55495031#55495031
 
+        //------------------
+        ARSessionManager.enabled = false;
+        //------------------
+
         CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
         if (!image.IsAvailable) return;
 
         Debug.Log(image.Width + " " + image.Height);
+        debugText.text = debugText.text + "\n" + image.Width + " " + image.Height;
 
         // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
         // I will explain later, why.
@@ -153,7 +159,6 @@ public class MenuButton : MonoBehaviour
             Utils.matToTexture2D(output_image, result);
             RawImage.texture = result;
             savePic(result);
-
             a.InitializeImage("0.png");
         }
 
@@ -167,6 +172,10 @@ public class MenuButton : MonoBehaviour
 
         YUVhandle.Free();
         RGBhandle.Free();
+
+        //-----------------
+        ARSessionManager.enabled = true;
+        //-----------------
     }
 
     public void savePic(Texture2D result)
@@ -181,7 +190,7 @@ public class MenuButton : MonoBehaviour
             destPath = Path.Combine(destPath, "dnn/0.png");
         }
 
-        debugText.text = debugText.text + "\n" + "destPath: " + destPath;
+        // debugText.text = debugText.text + "\n" + "destPath: " + destPath;
 
         File.WriteAllBytes(destPath, encodedPng);
     }
@@ -277,8 +286,20 @@ public class MenuButton : MonoBehaviour
         line.enabled = false;
     }
 
+    int nom = 0;
     public void InstantiateRandom()
     {
-        instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "banana");
+        if(nom==0)
+        {
+            instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "cubeB");
+            Debug.Log("nom: " + nom);
+            nom++;
+        }
+        else
+        {
+            instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "sphereB");
+            Debug.Log("nom: " + nom);
+        }
+        
     }
 }

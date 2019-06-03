@@ -107,7 +107,7 @@ namespace OpenCvYolo3
 
         public void ObjectDetection()
         {
-            gameObject.SetActive(true);
+            //gameObject.SetActive(true);
 
             // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
             Utils.setDebugMode(true);
@@ -242,8 +242,8 @@ namespace OpenCvYolo3
 
             Dnn.NMSBoxes(bboxes, scores, threshold, nmsThreshold, indices);
 
-            Debug.Log ("indices.dump () "+indices.dump ());
-            Debug.Log ("indices.ToString () "+indices.ToString());
+            Debug.Log("indices.dump () " + indices.dump());
+            Debug.Log("indices.ToString () " + indices.ToString());
 
             if (indices.rows() < 1 || indices.cols() < 1) return;
 
@@ -253,9 +253,39 @@ namespace OpenCvYolo3
             {
                 var box = boxes[i];
                 Draw(image, classIds[i], confidences[i], probabilities[i], box.x, box.y, box.width, box.height);
-                Debug.Log(Labels[classIds[i]] + ", center: " + box.x + ", " + box.y);
-                debugText.text = debugText.text + "\n" + Labels[classIds[i]] + ", center: " + box.x + ", " + box.y;
-                instantObj.instantiateObj((float)box.x, (float)box.y, Labels[classIds[i]]);
+
+                Mat rotat = new Mat(2, 2, CvType.CV_32FC1);
+                rotat.put(0, 0, 0, 1, -1, 0);
+
+                Mat vet = new Mat(2, 1, CvType.CV_32FC1);
+                vet.put(0, 0, box.x, box.y);
+
+                Mat ris = rotat * vet;
+                Debug.Log("ris" + ris.dump());
+
+                double[] hio = ris.get(1, 0);
+                hio[0] = hio[0] + 640;
+                ris.put(1, 0, hio);
+
+                debugText.text = debugText.text + "\n" + "vector: " + ris.dump();
+
+                if(Screen.orientation == ScreenOrientation.Landscape)
+                {
+                    instantObj.instantiateObj(Display.main.systemWidth * (float)box.x / 480f,
+                                              Display.main.systemHeight * (float)box.y / 640f, Labels[classIds[i]]);
+                }
+                else
+                {
+                    instantObj.instantiateObj(Display.main.systemWidth -  Display.main.systemWidth * (float)ris.get(0, 0)[0] / 480f,
+                                              Display.main.systemHeight * (float)ris.get(1, 0)[0] / 640f, Labels[classIds[i]]);
+                }
+
+
+
+                Debug.Log(Labels[classIds[i]] + ", centerBOX: " + box.x + ", " + box.y);
+                debugText.text = debugText.text + "\n" + Labels[classIds[i]];
+                debugText.text = debugText.text + "\n" + "centerBOX: " + box.x + ", " + box.y;
+                debugText.text = debugText.text + "\n" + "CalcCenter: " + Display.main.systemWidth * (float)ris.get(0, 0)[0] / 480f + ", " + Display.main.systemHeight * (float)ris.get(1, 0)[0] / 640f;
             }
 
         }

@@ -96,8 +96,6 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
         public void instantiateObj(float centerX, float centerY, string classNameObj = null)
         {
-            debugText.text = debugText.text + "\n" + "gesture.x: " + centerX + " gesture.y: " + centerY;
-
             // Raycast against the location the player touched to search for planes.
             TrackableHit hit;
             TrackableHitFlags raycastFilter = TrackableHitFlags.PlaneWithinPolygon;
@@ -126,6 +124,19 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     {
                         prefab = Prefab[1];
                     }
+                    else if (classNameObj == "orange")
+                    {
+                        prefab = Prefab[2];
+                    }
+                    else if (classNameObj == "cubeB")
+                    {
+                        prefab = Prefab[3];
+                    }
+                    else if (classNameObj == "sphereB")
+                    {
+                        prefab = Prefab[4];
+                    }
+
                     debugText.text = debugText.text + "\n" + "classNameObj: " + classNameObj;
                     var andyObject = Instantiate(prefab, hit.Pose.position, hit.Pose.rotation);
 
