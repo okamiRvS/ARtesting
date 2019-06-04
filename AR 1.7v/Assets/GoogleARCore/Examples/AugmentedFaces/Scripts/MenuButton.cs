@@ -100,10 +100,13 @@ public class MenuButton : MonoBehaviour
         //------------------
 
         CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
-        if (!image.IsAvailable) return;
 
+        if (!image.IsAvailable) { return; }       
+
+        /*
         Debug.Log(image.Width + " " + image.Height);
         debugText.text = debugText.text + "\n" + image.Width + " " + image.Height;
+        */
 
         // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
         // I will explain later, why.
@@ -145,7 +148,7 @@ public class MenuButton : MonoBehaviour
         // Send Mat output_image to Yolo3Android to process objectDetection
         Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
 
-        if (false)
+        if (true)
         {
             Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGB_NV12);
             a.InitializeImage(output_image);
@@ -170,6 +173,7 @@ public class MenuButton : MonoBehaviour
         debugText.text = debugText.text + "\n" + "output_imageToString " + output_image.ToString();
         */
 
+        image.Release();
         YUVhandle.Free();
         RGBhandle.Free();
 

@@ -31,10 +31,10 @@ namespace OpenCvYolo3
         [SerializeField] private Text debugText = null;
 
         #region
-        private string cfg = "yolov3.cfg";
-        private string weight = "yolov3.weights";
+        private string cfg = "yolov3-tiny.cfg";
+        private string weight = "yolov3-tiny.weights";
         private string names = "coco.names";
-        private string image = "1.jpg";
+        private string image;
 
         const float threshold = 0.24f;       //for confidence 
         const float nmsThreshold = 0.24f;    //threshold for nms
@@ -54,7 +54,6 @@ namespace OpenCvYolo3
             cfg = Utils.getFilePath("dnn/" + cfg);
             weight = Utils.getFilePath("dnn/" + weight);
             names = Utils.getFilePath("dnn/" + names);
-            image = Utils.getFilePath("dnn/" + image);
 
             Labels = readClassNames(names).ToArray();
             Colors = Enumerable
@@ -107,7 +106,7 @@ namespace OpenCvYolo3
 
         public void ObjectDetection()
         {
-            //gameObject.SetActive(true);
+            // gameObject.SetActive(true);
 
             // If true, The error log of the Native side OpenCV will be displayed on the Unity Editor Console.
             Utils.setDebugMode(true);
