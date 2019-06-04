@@ -10,7 +10,7 @@ public class test : MonoBehaviour
         {
             {"banana", 918.853f},
             {"apple", 1915.687f},
-            {"orange", 1915.687f},
+            {"orange", 2415.412f},
             {"cubeB", 3183.435f},
             {"sphereB", 1614.175f}
         };

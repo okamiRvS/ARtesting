@@ -352,6 +352,48 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 158589675}
   m_CullTransparentMesh: 0
+--- !u!1 &164023973
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 164023975}
+  - component: {fileID: 164023974}
+  m_Layer: 0
+  m_Name: takePhoto
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &164023974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 164023973}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9309f7fcc90f6c54c9710019fd8cb33e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RawImage: {fileID: 1937163984}
+  time: 5
+--- !u!4 &164023975
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 164023973}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.017039685, y: 0.021315347, z: -0.0051690787}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &180926469 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 114813560059052804, guid: 4ac4cbeedcf351a42b1851db6b1c405c,
@@ -2243,7 +2285,7 @@ MonoBehaviour:
   Prefab:
   - {fileID: 100000, guid: cfd8832ebffadf94d931b5a2ce986197, type: 3}
   - {fileID: 100000, guid: e7b5d84c6144a164e808d9fc49bbe939, type: 3}
-  - {fileID: 1199197890703304, guid: 2e5d7e72a7d1cfb4cb77f4a2c0806814, type: 2}
+  - {fileID: 100000, guid: 380293817b66b8646b3e1f1c51865641, type: 3}
   - {fileID: 100004, guid: 56a5b969d0b8c414097a1b551573a215, type: 3}
   - {fileID: 100006, guid: 37f358e275802e74b8aac461391a8b4c, type: 3}
   ManipulatorPrefab: {fileID: 1235887659476212, guid: 47d16ffe0a076dc4382630cf81fe95ec,

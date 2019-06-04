@@ -68,7 +68,7 @@ public class MenuButton : MonoBehaviour
         return supportedConfigurations.Count - 1;
     }
     // [] 1
-    
+
     public void SetGrid()
     {
         foreach (GameObject plane in GameObject.FindGameObjectsWithTag("plane"))
