@@ -64,12 +64,6 @@ namespace OpenCvYolo3
             instantObj = controller.GetComponent<AndyPlacementManipulator>();
 
             gameObject.SetActive(false);
-
-            /*
-            debugText.text = "imgPath: " + image;
-            debugText.text = debugText.text + "\n" + "Display.main.systemHeight: " + Display.main.systemHeight + "\n" + "Display.main.systemWidth: " + Display.main.systemWidth;
-            debugText.text = debugText.text + "\n" + "Display.main.systemHeight * 0.2f: " + Display.main.systemHeight * 0.2f;
-            */
         }
 
         public void InitializeImage()
@@ -134,7 +128,7 @@ namespace OpenCvYolo3
             {
                 //setting blob, size can be:320/416/608
                 //opencv blob setting can check here https://github.com/opencv/opencv/tree/master/samples/dnn#object-detection
-                Mat blob = Dnn.blobFromImage(img, 1.0 / 255, new Size(416, 416), new Scalar(0), false, false);
+                Mat blob = Dnn.blobFromImage(img, 1.0 / 255, new Size(320, 320), new Scalar(0), false, false);
 
                 //input data
                 net.setInput(blob);
@@ -159,12 +153,16 @@ namespace OpenCvYolo3
                 GetResult(outs, img, threshold, nmsThreshold);
             }
 
-            // Show Image
-            Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
-            Texture2D texture = new Texture2D(img.cols(), img.rows(), TextureFormat.RGBA32, false);
-            Utils.matToTexture2D(img, texture);
-            RawImage.texture = texture;
-            Utils.setDebugMode(false);
+            // Show Image in PicWiew
+            if (false)
+            {
+                Imgproc.cvtColor(img, img, Imgproc.COLOR_BGR2RGB);
+                Texture2D texture = new Texture2D(img.cols(), img.rows(), TextureFormat.RGBA32, false);
+                Utils.matToTexture2D(img, texture);
+                RawImage.texture = texture;
+                Utils.setDebugMode(false);
+            }
+
         }
 
         /// <summary>
@@ -215,7 +213,7 @@ namespace OpenCvYolo3
                             if (!nms)
                             {
                                 // draw result (if don't use NMSBoxes)
-                                Draw(image, classes, confidence, probability, centerX, centerY, width, height);
+                                // Draw(image, classes, confidence, probability, centerX, centerY, width, height);
                                 continue;
                             }
 
@@ -251,7 +249,7 @@ namespace OpenCvYolo3
             foreach (var i in indicesA)
             {
                 var box = boxes[i];
-                Draw(image, classIds[i], confidences[i], probabilities[i], box.x, box.y, box.width, box.height);
+                // Draw(image, classIds[i], confidences[i], probabilities[i], box.x, box.y, box.width, box.height);
 
                 Mat rotat = new Mat(2, 2, CvType.CV_32FC1);
                 rotat.put(0, 0, 0, 1, -1, 0);
@@ -266,8 +264,6 @@ namespace OpenCvYolo3
                 hio[0] = hio[0] + 640;
                 ris.put(1, 0, hio);
 
-                debugText.text = debugText.text + "\n" + "vector: " + ris.dump();
-
                 if(Screen.orientation == ScreenOrientation.Landscape)
                 {
                     instantObj.instantiateObj(Display.main.systemWidth * (float)box.x / 480f,
@@ -278,9 +274,7 @@ namespace OpenCvYolo3
                     instantObj.instantiateObj(Display.main.systemWidth -  Display.main.systemWidth * (float)ris.get(0, 0)[0] / 480f,
                                               Display.main.systemHeight * (float)ris.get(1, 0)[0] / 640f, Labels[classIds[i]]);
                 }
-
-
-
+                
                 Debug.Log(Labels[classIds[i]] + ", centerBOX: " + box.x + ", " + box.y);
                 debugText.text = debugText.text + "\n" + Labels[classIds[i]];
                 debugText.text = debugText.text + "\n" + "centerBOX: " + box.x + ", " + box.y;

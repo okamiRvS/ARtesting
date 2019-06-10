@@ -5,6 +5,7 @@ using OpenCVForUnity.UnityUtils;
 using OpenCvYolo3;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +14,9 @@ public class takeFrame : MonoBehaviour {
 
     public RawImage RawImage;
     Yolo3Android a;
+    public bool takeF = false;
+    public ARCoreSession ARSessionManager;
+    public GameObject Caricamento;
 
     private void Start()
     {
@@ -26,10 +30,15 @@ public class takeFrame : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (r)
+        if (r && takeF)
         {
+            Caricamento.SetActive(true);
             StartCoroutine(move());
             r = false;
+        }
+        else
+        {
+            Caricamento.SetActive(false);
         }
     }
 
@@ -37,15 +46,31 @@ public class takeFrame : MonoBehaviour {
     {
         yield return new WaitForSeconds(time);
 
+        //------------------
+        ARSessionManager.enabled = false;
+        //------------------
+
         CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
-        a.InitializeImage(yuv2rgb(image));
+
+        Mat rgb = yuv2rgb(image);
+        a.InitializeImage(rgb);     //a.InitializeImage("0.png");
 
         image.Release();
         r = true;
+
+        //-----------------
+        ARSessionManager.enabled = true;
+        //-----------------
     }
 
     public Mat yuv2rgb(CameraImageBytes image)
     {
+        // YUV TO RGB
+        // https://github.com/google-ar/arcore-unity-sdk/issues/221
+        // https://stackoverflow.com/questions/49579334/save-acquirecameraimagebytes-from-unity-arcore-to-storage-as-an-image
+        // https://github.com/google-ar/arcore-unity-sdk/issues/527
+        // https://stackoverflow.com/questions/55495030/how-to-use-the-arcore-camera-image-in-opencv-in-an-unity-android-app/55495031#55495031
+
         if (!image.IsAvailable) { return null; }
 
         // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
@@ -85,11 +110,39 @@ public class takeFrame : MonoBehaviour {
         Mat output_image = new Mat(image.Height, image.Width, CvType.CV_8UC3);
         Utils.copyToMat(RGBhandle.AddrOfPinnedObject(), output_image);
 
-        Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGB_NV12);
+        if (true)
+        {
+            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGB_NV12);
+        }
+        else
+        {
+            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGBA_NV12);
+            // Create a new texture object
+            Texture2D result = new Texture2D(image.Width, image.Height, TextureFormat.RGB24, false);
+            Utils.matToTexture2D(output_image, result);
+            savePic(result);
+        }
 
         YUVhandle.Free();
         RGBhandle.Free();
 
         return output_image;
+    }
+
+    public void savePic(Texture2D result)
+    {
+        // Save pic on streamngAssets
+        byte[] encodedPng = result.EncodeToPNG();
+        string destPath = Path.Combine(Application.streamingAssetsPath, "dnn/0.png");
+
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            destPath = Path.Combine(Application.persistentDataPath, "opencvforunity");
+            destPath = Path.Combine(destPath, "dnn/0.png");
+        }
+
+        // debugText.text = debugText.text + "\n" + "destPath: " + destPath;
+
+        File.WriteAllBytes(destPath, encodedPng);
     }
 }

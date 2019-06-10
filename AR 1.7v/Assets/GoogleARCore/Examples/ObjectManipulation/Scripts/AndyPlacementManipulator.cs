@@ -151,8 +151,9 @@ namespace GoogleARCore.Examples.ObjectManipulation
                     // Create an anchor to allow ARCore to track the hitpoint as understanding of the physical
                     // world evolves.
                     var anchor = hit.Trackable.CreateAnchor(hit.Pose);
-                    anchor.gameObject.tag = "anchor";
-
+                    
+                    //-anchor.gameObject.tag = "anchor";
+                   
                     // Make manipulator a child of the anchor.
                     manipulator.transform.parent = anchor.transform;
 
@@ -165,8 +166,24 @@ namespace GoogleARCore.Examples.ObjectManipulation
 
                     // Select the placed object.
                     manipulator.GetComponent<Manipulator>().Select();
+
+                    if (check(anchor.transform.position)) { Destroy(anchor.gameObject); }
+                    anchor.gameObject.tag = "anchor";
                 }
             }
+        }
+
+        private bool check(Vector3 s)
+        {
+            foreach (GameObject anchor in GameObject.FindGameObjectsWithTag("anchor"))
+            {
+                Debug.Log("DIFFERENCEEEEEEEEEEEEES: " + (Mathf.Abs(anchor.transform.position.sqrMagnitude - s.sqrMagnitude)));
+                if (Mathf.Abs(anchor.transform.position.sqrMagnitude - s.sqrMagnitude) < 0.01f)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         private bool foodCheck(string food)

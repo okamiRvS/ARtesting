@@ -40,34 +40,21 @@ public class MenuButton : MonoBehaviour
     [Tooltip("The currentFrme Game Object.")]
     [SerializeField] private GameObject currentFrme = null;
 
+    /// <summary>
+    /// The takePhoto Game Object.
+    /// </summary>
+    [Tooltip("The takePhoto Game Object.")]
+    [SerializeField] private GameObject takePhoto = null;
+
     private bool GridStatus = true;
 
     private static AndyPlacementManipulator instantObj;
     public GameObject controller;
-    public GameObject planeGenerator;
-
-    // [] 1
-    public ARCoreSession ARSessionManager;
-    private ARCoreSession.OnChooseCameraConfigurationDelegate m_OnChoseCameraConfiguration = null;
 
     public void Start()
     {
-        // Register the callback to set camera config before arcore session is enabled.
-        m_OnChoseCameraConfiguration = _ChooseCameraConfiguration;
-        ARSessionManager.RegisterChooseCameraConfigurationCallback(m_OnChoseCameraConfiguration);
-
-        // Pause and resume the ARCore session to apply the camera configuration.
-        ARSessionManager.enabled = false;
-        ARSessionManager.enabled = true;
-
         instantObj = controller.GetComponent<AndyPlacementManipulator>();
     }
-
-    private int _ChooseCameraConfiguration(List<CameraConfig> supportedConfigurations)
-    {
-        return supportedConfigurations.Count - 1;
-    }
-    // [] 1
 
     public void SetGrid()
     {
@@ -89,114 +76,14 @@ public class MenuButton : MonoBehaviour
 
     public void TakeFrame()
     {
-        // YUV TO RGB
-        // https://github.com/google-ar/arcore-unity-sdk/issues/221
-        // https://stackoverflow.com/questions/49579334/save-acquirecameraimagebytes-from-unity-arcore-to-storage-as-an-image
-        // https://github.com/google-ar/arcore-unity-sdk/issues/527
-        // https://stackoverflow.com/questions/55495030/how-to-use-the-arcore-camera-image-in-opencv-in-an-unity-android-app/55495031#55495031
-
-        //------------------
-        ARSessionManager.enabled = false;
-        //------------------
-
-        CameraImageBytes image = Frame.CameraImage.AcquireCameraImageBytes();
-
-        if (!image.IsAvailable) { return; }       
-
-        /*
-        Debug.Log(image.Width + " " + image.Height);
-        debugText.text = debugText.text + "\n" + image.Width + " " + image.Height;
-        */
-
-        // To save a YUV_420_888 image, you need 1.5*pixelCount bytes.
-        // I will explain later, why.
-        int bufferSize = (int)(image.Width * image.Height * 1.5f);
-        byte[] YUVimage = new byte[bufferSize];
-
-        // As CameraImageBytes keep the Y, U and V data in three separate
-        // arrays, we need to put them in a single array. This is done using
-        // native pointers, which are considered unsafe in C#.
-        unsafe
+        if (takePhoto.GetComponent<takeFrame>().takeF)
         {
-            for (int i = 0; i < image.Width * image.Height; i++)
-            {
-                YUVimage[i] = *((byte*)image.Y.ToPointer() + (i * sizeof(byte)));
-            }
-
-            for (int i = 0; i < image.Width * image.Height / 4; i++)
-            {
-                YUVimage[(image.Width * image.Height) + 2 * i] = *((byte*)image.U.ToPointer() + (i * image.UVPixelStride * sizeof(byte)));
-                YUVimage[(image.Width * image.Height) + 2 * i + 1] = *((byte*)image.V.ToPointer() + (i * image.UVPixelStride * sizeof(byte)));
-            }
-        }
-
-        // Create the output byte array. RGB is three channels, therefore
-        // we need 3 times the pixel count
-        byte[] RGBimage = new byte[image.Width * image.Height * 3];
-
-        // GCHandles help us "pin" the arrays in the memory, so that we can
-        // pass them to the C++ code.
-        GCHandle YUVhandle = GCHandle.Alloc(YUVimage, GCHandleType.Pinned);
-        GCHandle RGBhandle = GCHandle.Alloc(RGBimage, GCHandleType.Pinned);
-
-        Mat input_image = new Mat(image.Height + image.Height / 2, image.Width, CvType.CV_8UC1);
-        Utils.copyToMat(YUVhandle.AddrOfPinnedObject(), input_image);
-
-        Mat output_image = new Mat(image.Height, image.Width, CvType.CV_8UC3);
-        Utils.copyToMat(RGBhandle.AddrOfPinnedObject(), output_image);
-
-        // Send Mat output_image to Yolo3Android to process objectDetection
-        Yolo3Android a = RawImage.GetComponent<Yolo3Android>();
-
-        if (true)
-        {
-            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGB_NV12);
-            a.InitializeImage(output_image);
+            takePhoto.GetComponent<takeFrame>().takeF = false;
         }
         else
         {
-            Imgproc.cvtColor(input_image, output_image, Imgproc.COLOR_YUV2RGBA_NV12);
-
-            // Create a new texture object
-            Texture2D result = new Texture2D(image.Width, image.Height, TextureFormat.RGB24, false);
-            Utils.matToTexture2D(output_image, result);
-            RawImage.texture = result;
-            savePic(result);
-            a.InitializeImage("0.png");
+            takePhoto.GetComponent<takeFrame>().takeF = true;
         }
-
-        /*
-        Debug.Log("input_imageToString" + input_image.ToString());
-        Debug.Log("output_imageToString " + output_image.ToString());
-
-        debugText.text = debugText.text + "\n" + "input_imageToString " + input_image.ToString();
-        debugText.text = debugText.text + "\n" + "output_imageToString " + output_image.ToString();
-        */
-
-        image.Release();
-        YUVhandle.Free();
-        RGBhandle.Free();
-
-        //-----------------
-        ARSessionManager.enabled = true;
-        //-----------------
-    }
-
-    public void savePic(Texture2D result)
-    {
-        // Save pic on streamngAssets
-        byte[] encodedPng = result.EncodeToPNG();
-        string destPath = Path.Combine(Application.streamingAssetsPath, "dnn/0.png");
-
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            destPath = Path.Combine(Application.persistentDataPath, "opencvforunity");
-            destPath = Path.Combine(destPath, "dnn/0.png");
-        }
-
-        // debugText.text = debugText.text + "\n" + "destPath: " + destPath;
-
-        File.WriteAllBytes(destPath, encodedPng);
     }
 
     public void QuitGame()
@@ -268,7 +155,7 @@ public class MenuButton : MonoBehaviour
                 else
                 {
                     points[1] = hit.Pose.position;
-                    debugText.text = debugText.text + "\n" + "Lenght: " + Vector3.Distance(points[0],points[1]) * 100 + "cm" ;
+                    debugText.text = debugText.text + "\n" + "Lenght: " + Vector3.Distance(points[0], points[1]) * 100 + "cm";
                     l2p.Add(Instantiate(prefab, hit.Pose.position, hit.Pose.rotation));
                     l2p[1].tag = "anchor";
 
@@ -290,20 +177,8 @@ public class MenuButton : MonoBehaviour
         line.enabled = false;
     }
 
-    int nom = 0;
     public void InstantiateRandom()
     {
-        if(nom==0)
-        {
-            instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "cubeB");
-            Debug.Log("nom: " + nom);
-            nom++;
-        }
-        else
-        {
-            instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2, "sphereB");
-            Debug.Log("nom: " + nom);
-        }
-        
+        instantObj.instantiateObj(Display.main.systemWidth / 2, Display.main.systemHeight / 2);
     }
 }
